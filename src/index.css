@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap");
+@import "tailwindcss";
+/* enable daisyUI plugin */
+@plugin "daisyui" {
+  themes: all;
+}
+
+@keyframes hero-text-enter {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-chat-enter {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@keyframes chat-bubble-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes header-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
+@keyframes cta-bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* ------- Flow section styles ------- */
+@layer components {
+  .novus-flow-line {
+    min-height: 7rem; /* space for line + dots + labels */
+  }
+}
+
+/* -------value prop card animation ------- */
+@layer components {
+  @keyframes card-idle-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  .animate-card-idle {
+    animation: card-idle-float 3s ease-in-out infinite;
+  }
+}
+
+/* ------- footer cta animation ------- */
+
+@layer components {
+  @keyframes footer-cta-pulse {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+    50% {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  .animate-footer-cta {
+    animation: footer-cta-pulse 5s ease-in-out infinite;
+  }
+}
+
+/* ------- caret blink animation ------- */
+
+@layer components {
+  @keyframes novus-caret-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .novus-input {
+    position: relative;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  .novus-typing-overlay {
+    position: absolute;
+    inset: 0.25rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    pointer-events: none;
+    color: rgba(148, 163, 184, 1);
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  /* changed to black + a bit thinner */
+  .novus-caret-inline {
+    width: 1px;
+    height: 1em;
+    margin-left: 2px;
+    background-color: #000;
+    animation: novus-caret-blink 1s step-end infinite;
+  }
+}
