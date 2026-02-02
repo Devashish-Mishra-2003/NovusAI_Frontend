@@ -15,7 +15,7 @@ import {
   Center,
   ThemeIcon,
 } from "@mantine/core";
-import { IconAlertCircle, IconInfoCircle, IconShieldLock } from "@tabler/icons-react";
+import { IconAlertCircle, IconShieldLock } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useHover } from "@mantine/hooks";

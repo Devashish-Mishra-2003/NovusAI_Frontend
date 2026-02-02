@@ -6,7 +6,6 @@ import {
   Stack,
   ThemeIcon,
   useMantineTheme,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { IconCloudUpload, IconFileCheck, IconAlertCircle } from "@tabler/icons-react";
 import { uploadDocument } from "../api/documents";
@@ -16,8 +15,6 @@ export default function DocumentUpload() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const theme = useMantineTheme();
-  const { colorScheme } = useMantineColorScheme();
-  const isDark = colorScheme === "dark";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];

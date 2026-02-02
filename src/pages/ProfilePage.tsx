@@ -122,7 +122,7 @@ const ProfilePage: React.FC = () => {
                   </Title>
                   <Group gap={8} mt={5}>
                     <Badge variant="dot" color="blue" size="sm">
-                      ID: {user.id ? user.id.toString().padStart(5, '0') : "GEN-01"}
+                      ID: {user.user_id.toString().padStart(5, "0")}
                     </Badge>
                     <Badge variant="light" color="green" leftSection={<IconCircleCheck size={10}/>} size="sm">
                       Active
