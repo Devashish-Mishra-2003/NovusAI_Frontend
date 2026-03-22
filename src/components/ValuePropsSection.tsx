@@ -59,8 +59,8 @@ const ValueCard = ({ card, index, isDark }: { card: CardConfig; index: number; i
           style={{
             ...transitionStyles,
             transitionDelay: `${index * 150}ms`,
-            transform: `${transitionStyles.transform} ${hovered ? "translateY(-12px)" : "translateY(0)"}`,
-            transition: "transform 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 400ms ease, border-color 400ms ease",
+            transform: `${transitionStyles.transform} ${hovered ? "translateY(-10px)" : "translateY(0)"}`,
+            transition: "transform 400ms cubic-bezier(0.175, 0.885, 0.32, 1), box-shadow 400ms ease, border-color 400ms ease",
             backgroundColor: isDark ? theme.colors.dark[7] : theme.white,
             boxShadow: hovered ? theme.shadows.xl : theme.shadows.sm,
             borderColor: hovered ? theme.colors.blue[5] : (isDark ? theme.colors.dark[5] : theme.colors.gray[3]),
@@ -119,9 +119,9 @@ const ValuePropsSection: React.FC = () => {
   const isDark = colorScheme === "dark";
 
   return (
-    <Box py={100} bg={isDark ? "dark.8" : "gray.0"}>
+    <Box py={{ base: 60, md: 80 }} bg={isDark ? "dark.8" : "gray.0"}>
       <Container size="lg">
-        <Stack align="center" mb={60}>
+        <Stack align="center" mb={40}>
           <Text fw={800} size="sm" c="blue.6" style={{ letterSpacing: 2, textTransform: "uppercase" }}>
             ROI & Efficiency
           </Text>
@@ -130,7 +130,7 @@ const ValuePropsSection: React.FC = () => {
           </Title>
         </Stack>
 
-        <Grid gutter="lg">
+        <Grid gutter={{ base: "md", md: "lg" }}>
           {cards.map((card, index) => (
             <Grid.Col key={card.id} span={{ base: 12, md: 6 }}>
               <ValueCard card={card} index={index} isDark={isDark} />

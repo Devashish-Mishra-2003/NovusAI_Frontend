@@ -3,6 +3,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import CallToActionSection from "../components/CallToActionSection";
+import PricingSection from "../components/PricingSection";
 import FlowSection from "../components/FlowSection";
 import ValuePropsSection from "../components/ValuePropsSection";
 import SiteFooter from "../components/SiteFooter";
@@ -14,9 +15,10 @@ const LandingPage: React.FC = () => {
 
       <main className="flex-1">
         <HeroSection />
-        <CallToActionSection />
         <FlowSection />
         <ValuePropsSection />
+        <PricingSection />
+        <CallToActionSection />
       </main>
 
       <SiteFooter />

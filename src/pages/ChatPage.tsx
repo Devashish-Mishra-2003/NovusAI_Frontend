@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
   Box, Container, Text, Title, Group, Stack, ActionIcon,
   Textarea, Button, ScrollArea, Paper, Loader, rem, 
-  useMantineTheme, useMantineColorScheme, Skeleton
+  useMantineTheme, useMantineColorScheme, Skeleton, Drawer
 } from "@mantine/core";
 import {
   IconSend, IconFileDownload, 
-  IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand,
-  IconLayoutSidebarRightCollapse, IconLayoutSidebarRightExpand,
-  IconRobot, IconUser
+  IconRobot, IconUser,
+  IconHistory, IconChartPie,
+  IconX
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { motion, AnimatePresence } from "framer-motion";
+import { useMediaQuery } from "@mantine/hooks";
 
 import { api } from "../api/client";
 import HistoryPanel from "../components/HistoryPanel";
@@ -24,16 +25,19 @@ const HEADER_HEIGHT = rem(60);
 
 const ChatPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === "dark";
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const [messages, setMessages] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [leftOpen, setLeftOpen] = useState(true);
-  const [rightOpen, setRightOpen] = useState(true);
+  // Default to closed
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
   const [activeViz, setActiveViz] = useState<any>(null);
   
   // Transition state to handle clear-screen
@@ -150,14 +154,36 @@ const ChatPage: React.FC = () => {
       backgroundColor: isDark ? theme.colors.dark[9] : theme.colors.gray[0] 
     }}>
       
-      <HistoryPanel 
-        isOpen={leftOpen} 
-        history={history} 
-        activeId={conversationId} 
-        onSelect={(id) => setSearchParams({ c: id })}
-        onNewChat={handleNewSynthesis}
-        headerHeight={HEADER_HEIGHT}
-      />
+      {isMobile ? (
+        <Drawer 
+          opened={leftOpen} 
+          onClose={() => setLeftOpen(false)} 
+          size="100%" 
+          padding={0} 
+          withCloseButton={false}
+        >
+          <Box h="100vh">
+            <HistoryPanel 
+              isOpen={true} 
+              history={history} 
+              activeId={conversationId} 
+              onSelect={(id) => { setSearchParams({ c: id }); setLeftOpen(false); }}
+              onNewChat={() => { handleNewSynthesis(); setLeftOpen(false); }}
+              headerHeight={HEADER_HEIGHT}
+              onCloseMobile={() => setLeftOpen(false)}
+            />
+          </Box>
+        </Drawer>
+      ) : (
+        <HistoryPanel 
+          isOpen={leftOpen} 
+          history={history} 
+          activeId={conversationId} 
+          onSelect={(id) => setSearchParams({ c: id })}
+          onNewChat={handleNewSynthesis}
+          headerHeight={HEADER_HEIGHT}
+        />
+      )}
 
       <Stack style={{ 
         flex: 1, 
@@ -177,10 +203,15 @@ const ChatPage: React.FC = () => {
         }}>
           <Group justify="space-between" style={{ width: '100%' }}>
             <Group gap="sm">
-              <ActionIcon variant="subtle" color="blue" radius="md" onClick={() => setLeftOpen(!leftOpen)}>
-                {leftOpen ? <IconLayoutSidebarLeftCollapse size={20} /> : <IconLayoutSidebarLeftExpand size={20} />}
+              <ActionIcon variant="subtle" color="blue" radius="xl" onClick={() => setLeftOpen(!leftOpen)}>
+                <IconHistory size={20} />
               </ActionIcon>
-              <Title order={5} fw={900} style={{ letterSpacing: -0.8 }}>
+              <Title 
+                order={5} 
+                fw={900} 
+                style={{ letterSpacing: -0.8, cursor: 'pointer' }}
+                onClick={() => navigate("/")}
+              >
                 Novus<span style={{ color: theme.colors.blue[6] }}>AI</span>
               </Title>
             </Group>
@@ -196,14 +227,14 @@ const ChatPage: React.FC = () => {
                 Export PDF
               </Button>
               <ActionIcon variant="subtle" color="blue" radius="md" onClick={() => setRightOpen(!rightOpen)}>
-                {rightOpen ? <IconLayoutSidebarRightCollapse size={20} /> : <IconLayoutSidebarRightExpand size={20} />}
+                <IconChartPie size={20} />
               </ActionIcon>
             </Group>
           </Group>
         </Box>
 
         {/* Chat ScrollArea */}
-        <ScrollArea style={{ flex: 1 }} p="xl" scrollbarSize={6}>
+        <ScrollArea style={{ flex: 1 }} p={{ base: "xs", sm: "xl" }} scrollbarSize={6}>
           <Container size="md">
             <AnimatePresence mode="wait">
               {!isResetting && (
@@ -253,7 +284,7 @@ const ChatPage: React.FC = () => {
                           }}
                         >
                           {m.content === "__LOADING__" ? (
-                            <Stack gap="xs" py="xs" w={300}>
+                            <Stack gap="xs" py="xs" w="100%" maw={300}>
                               <Group gap="xs">
                                 <Loader size="xs" color="blue" type="bars" />
                                 <Text size="xs" fw={700} c="blue.6">SYNTHESIZING...</Text>
@@ -278,7 +309,7 @@ const ChatPage: React.FC = () => {
         </ScrollArea>
 
         {/* Input Area */}
-        <Box p="xl" style={{ 
+        <Box p={{ base: "xs", sm: "xl" }} style={{ 
           backgroundColor: isDark ? theme.colors.dark[8] : "#FFFFFF",
           borderTop: `1px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[2]}`
         }}>
@@ -323,38 +354,73 @@ const ChatPage: React.FC = () => {
       </Stack>
 
       {/* 3. RIGHT PANEL */}
-      <Paper 
-        withBorder 
-        radius={0}
-        style={{ 
-          width: rightOpen ? 360 : 0, 
-          transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)", 
-          backgroundColor: isDark ? theme.colors.dark[8] : theme.colors.gray[0],
-          borderLeft: `1px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[3]}`,
-          zIndex: 20,
-          display: "flex", // Required fix for overflow
-          flexDirection: "column" // Required fix for overflow
-        }}
-      >
-        <Box px="md" style={{ 
-          height: HEADER_HEIGHT, 
-          minHeight: HEADER_HEIGHT,
-          display: 'flex', 
-          alignItems: 'center', 
-          borderBottom: `1px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[3]}`,
-          backgroundColor: isDark ? "rgba(26, 27, 30, 0.5)" : "rgba(255, 255, 255, 0.5)"
-        }}>
-          <Text size="xs" fw={900} style={{ letterSpacing: 1.5 }}>LIVE INSIGHTS</Text>
-        </Box>
-        <ScrollArea 
-          style={{ flex: 1 }} // Grow to fill container
-          p="md" 
-          scrollbarSize={6} 
-          offsetScrollbars
+      {isMobile ? (
+        <Drawer 
+          opened={rightOpen} 
+          onClose={() => setRightOpen(false)} 
+          position="right" 
+          size="100%" 
+          padding={0} 
+          withCloseButton={false}
         >
-          <VisualizationPanel visualization={activeViz} />
-        </ScrollArea>
-      </Paper>
+          <Box h="100vh" display="flex" style={{ flexDirection: 'column' }}>
+            <Box px="md" style={{ 
+              height: HEADER_HEIGHT, 
+              minHeight: HEADER_HEIGHT,
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              borderBottom: `1px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[3]}`,
+              backgroundColor: isDark ? "rgba(26, 27, 30, 0.5)" : "rgba(255, 255, 255, 0.5)"
+            }}>
+              <Text size="xs" fw={900} style={{ letterSpacing: 1.5 }}>LIVE INSIGHTS</Text>
+              <ActionIcon variant="subtle" color="gray" radius="xl" onClick={() => setRightOpen(false)}>
+                <IconX size={20} />
+              </ActionIcon>
+            </Box>
+            <ScrollArea 
+              style={{ flex: 1 }} 
+              p="md" 
+              scrollbarSize={6} 
+            >
+              <VisualizationPanel visualization={activeViz} />
+            </ScrollArea>
+          </Box>
+        </Drawer>
+      ) : (
+        <Paper 
+          withBorder 
+          radius={0}
+          style={{ 
+            width: rightOpen ? 360 : 0, 
+            transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)", 
+            backgroundColor: isDark ? theme.colors.dark[8] : theme.colors.gray[0],
+            borderLeft: `1px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[3]}`,
+            zIndex: 20,
+            display: "flex", 
+            flexDirection: "column" 
+          }}
+        >
+          <Box px="md" style={{ 
+            height: HEADER_HEIGHT, 
+            minHeight: HEADER_HEIGHT,
+            display: 'flex', 
+            alignItems: 'center', 
+            borderBottom: `1px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[3]}`,
+            backgroundColor: isDark ? "rgba(26, 27, 30, 0.5)" : "rgba(255, 255, 255, 0.5)"
+          }}>
+            <Text size="xs" fw={900} style={{ letterSpacing: 1.5 }}>LIVE INSIGHTS</Text>
+          </Box>
+          <ScrollArea 
+            style={{ flex: 1 }} 
+            p="md" 
+            scrollbarSize={6} 
+            offsetScrollbars
+          >
+            <VisualizationPanel visualization={activeViz} />
+          </ScrollArea>
+        </Paper>
+      )}
 
       <style>{`
         .markdown-content p { margin: 0 0 8px 0; }

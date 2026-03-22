@@ -132,7 +132,7 @@ const LoginPage: React.FC = () => {
             <Paper
               withBorder
               radius="xl"
-              p={40}
+              p={{ base: 20, sm: 40 }}
               style={{
                 ...styles,
                 background: isDark ? "rgba(26, 27, 30, 0.85)" : "rgba(255, 255, 255, 0.95)",

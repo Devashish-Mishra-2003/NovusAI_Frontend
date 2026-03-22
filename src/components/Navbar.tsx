@@ -11,13 +11,17 @@ import {
   useMantineTheme,
   UnstyledButton,
   Badge,
+  Burger,
+  Collapse,
+  Paper,
+  Stack,
 } from "@mantine/core";
 import {
   IconSun,
   IconMoonStars,
   IconLogout,
 } from "@tabler/icons-react";
-import { useHover } from "@mantine/hooks";
+import { useHover, useMediaQuery, useDisclosure } from "@mantine/hooks";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../api/client";
 
@@ -31,6 +35,8 @@ const Navbar: React.FC = () => {
   const { status, user, logout } = useAuth();
 
   const isDark = colorScheme === "dark";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const [mobileMenuOpen, { toggle: toggleMobileMenu, close: closeMobileMenu }] = useDisclosure(false);
   const isAuthenticated = status === "authenticated";
   const isAdmin = isAuthenticated && user?.role === "admin";
 
@@ -111,9 +117,9 @@ const Navbar: React.FC = () => {
         width: "100%",
         zIndex: 100,
         backgroundColor: isDark
-          ? "rgba(26, 27, 30, 0.8)"
-          : "rgba(255, 255, 255, 0.8)",
-        backdropFilter: "blur(12px)",
+          ? "rgba(26, 27, 30, 0.95)"
+          : "#ffffff",
+        backdropFilter: isDark ? "blur(12px)" : "none",
         borderBottom: `1px solid ${
           isDark ? theme.colors.dark[4] : theme.colors.gray[2]
         }`,
@@ -148,98 +154,137 @@ const Navbar: React.FC = () => {
           </Box>
 
           {/* Right side */}
-          <Group gap="xl">
-            {/* Authenticated links */}
-            {isAuthenticated && (
-              <Group gap="lg">
-                {isAdmin && (
-                  <Group gap={6}>
-                    <NavLink
-                      label="Approvals"
-                      path="/admin/approvals"
-                    />
-                    {pendingCount > 0 && (
-                      <Badge
-                        size="xs"
-                        color="red"
-                        variant="filled"
-                        radius="xl"
-                      >
-                        {pendingCount}
-                      </Badge>
-                    )}
-                  </Group>
-                )}
-
-                <NavLink label="Profile" path="/profile" />
-              </Group>
-            )}
-
-            <Group gap="md">
-              {/* Primary CTA */}
-              <Button
-                ref={ref}
-                radius="xl"
-                size="md"
-                onClick={handlePrimaryClick}
-                style={{
-                  transition:
-                    "transform 200ms ease, box-shadow 200ms ease",
-                  transform: hovered
-                    ? "translateY(-2px)"
-                    : "translateY(0)",
-                  boxShadow: hovered
-                    ? theme.shadows.md
-                    : "none",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  padding: "0 24px",
-                }}
-              >
-                {isAuthenticated ? "Go to Chat" : "Try NovusAI"}
-              </Button>
-
-              {/* Logout */}
+          {isMobile ? (
+            <Burger opened={mobileMenuOpen} onClick={toggleMobileMenu} aria-label="Toggle navigation" />
+          ) : (
+            <Group gap="xl">
+              {/* Authenticated links */}
               {isAuthenticated && (
-                <ActionIcon
-                  variant="light"
-                  color="red"
-                  size="lg"
-                  radius="xl"
-                  onClick={handleLogout}
-                  title="Logout"
-                >
-                  <IconLogout size={20} />
-                </ActionIcon>
+                <Group gap="lg">
+                  {isAdmin && (
+                    <Group gap={6}>
+                      <NavLink
+                        label="Approvals"
+                        path="/admin/approvals"
+                      />
+                      {pendingCount > 0 && (
+                        <Badge
+                          size="xs"
+                          color="red"
+                          variant="filled"
+                          radius="xl"
+                        >
+                          {pendingCount}
+                        </Badge>
+                      )}
+                    </Group>
+                  )}
+
+                  <NavLink label="Profile" path="/profile" />
+                </Group>
               )}
 
-              {/* Theme toggle */}
-              <ActionIcon
-                variant="subtle"
-                color={isDark ? "yellow" : "blue"}
-                size="lg"
-                radius="xl"
-                onClick={toggleColorScheme}
-                aria-label="Toggle color scheme"
-                styles={{
-                  root: {
-                    transition: "transform 200ms ease",
-                    "&:hover": {
-                      transform: "rotate(15deg) scale(1.1)",
-                    },
-                  },
-                }}
-              >
-                {isDark ? (
-                  <IconSun size={24} stroke={1.5} />
-                ) : (
-                  <IconMoonStars size={24} stroke={1.5} />
+              <Group gap="md">
+                {/* Primary CTA */}
+                <Button
+                  ref={ref}
+                  radius="xl"
+                  size="md"
+                  onClick={handlePrimaryClick}
+                  style={{
+                    transition:
+                      "transform 200ms ease, box-shadow 200ms ease",
+                    transform: hovered
+                      ? "translateY(-2px)"
+                      : "translateY(0)",
+                    boxShadow: hovered
+                      ? theme.shadows.md
+                      : "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    padding: "0 24px",
+                  }}
+                >
+                  {isAuthenticated ? "Go to Chat" : "Try NovusAI"}
+                </Button>
+
+                {/* Logout */}
+                {isAuthenticated && (
+                  <ActionIcon
+                    variant="light"
+                    color="red"
+                    size="lg"
+                    radius="xl"
+                    onClick={handleLogout}
+                    title="Logout"
+                  >
+                    <IconLogout size={20} />
+                  </ActionIcon>
                 )}
-              </ActionIcon>
+
+                {/* Theme toggle */}
+                <ActionIcon
+                  variant="subtle"
+                  color={isDark ? "yellow" : "blue"}
+                  size="lg"
+                  radius="xl"
+                  onClick={toggleColorScheme}
+                  aria-label="Toggle color scheme"
+                  styles={{
+                    root: {
+                      transition: "transform 200ms ease",
+                      "&:hover": {
+                        transform: "rotate(15deg) scale(1.1)",
+                      },
+                    },
+                  }}
+                >
+                  {isDark ? (
+                    <IconSun size={24} stroke={1.5} />
+                  ) : (
+                    <IconMoonStars size={24} stroke={1.5} />
+                  )}
+                </ActionIcon>
+              </Group>
             </Group>
-          </Group>
+          )}
         </Group>
       </Container>
+      
+      {/* Mobile Dropdown Menu */}
+      <Collapse in={mobileMenuOpen} style={{ position: 'absolute', top: 80, left: 0, right: 0, zIndex: 99 }}>
+        <Paper radius={0} shadow="md" p="xl" withBorder bg={isDark ? "rgb(26, 27, 30)" : "white"}>
+          <Stack gap="xl">
+            {isAuthenticated && (
+              <>
+                {isAdmin && (
+                  <Group justify="space-between" onClick={closeMobileMenu}>
+                    <NavLink label="Approvals" path="/admin/approvals" />
+                    {pendingCount > 0 && <Badge color="red">{pendingCount}</Badge>}
+                  </Group>
+                )}
+                <Box onClick={closeMobileMenu}>
+                  <NavLink label="Profile" path="/profile" />
+                </Box>
+              </>
+            )}
+
+            <Button fullWidth size="lg" radius="xl" onClick={() => { handlePrimaryClick(); closeMobileMenu(); }}>
+              {isAuthenticated ? "Go to Chat" : "Try NovusAI"}
+            </Button>
+
+            {isAuthenticated && (
+              <Button fullWidth size="lg" radius="xl" variant="light" color="red" onClick={() => { handleLogout(); closeMobileMenu(); }}>
+                Logout
+              </Button>
+            )}
+
+            <Button fullWidth size="lg" radius="xl" variant="default" onClick={() => { toggleColorScheme(); closeMobileMenu(); }} leftSection={isDark ? <IconSun size={20}/> : <IconMoonStars size={20}/>}>
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </Button>
+          </Stack>
+        </Paper>
+      </Collapse>
 
       <style>{`
         .nav-link-item:hover .underline {

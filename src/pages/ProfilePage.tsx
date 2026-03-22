@@ -14,7 +14,7 @@ import {
   useMantineTheme,
   useMantineColorScheme,
   ActionIcon,
-  SimpleGrid,
+  Grid,
   Paper,
 } from "@mantine/core";
 import { 
@@ -74,31 +74,21 @@ const ProfilePage: React.FC = () => {
               <Divider orientation="vertical" />
               <Text fw={800} size="xs" style={{ letterSpacing: 1.5 }}>USER IDENTITY & VAULT</Text>
             </Group>
-            
-            <Button
-              variant="filled"
-              color="blue"
-              radius="xl"
-              size="sm"
-              onClick={() => navigate("/chat")}
-              className="pill-btn"
-            >
-              Open Discovery Engine
-            </Button>
           </Group>
         </Container>
       </Box>
 
       {/* Main Content */}
       <Box style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-        <Container size="lg" py={40} style={{ width: '100%' }}>
-          <SimpleGrid cols={{ base: 1, md: 3 }} spacing={50} style={{ alignItems: 'stretch' }}>
+        <Container size="lg" py={{ base: 20, md: 40 }} style={{ width: '100%' }}>
+          <Grid gutter={50} align="stretch">
             
             {/* Left Column */}
-            <Paper 
-              withBorder 
-              p={40} 
-              radius="xl" 
+            <Grid.Col span={{ base: 12, md: 4 }}>
+              <Paper 
+                withBorder 
+                p={{ base: "xl", md: 40 }} 
+                radius="xl" 
               style={{ 
                 backgroundColor: isDark ? theme.colors.dark[8] : theme.colors.gray[0],
                 display: 'flex',
@@ -175,11 +165,12 @@ const ProfilePage: React.FC = () => {
                 Sign Out
               </Button>
             </Paper>
+            </Grid.Col>
 
             {/* Right Column */}
-            <Box style={{ gridColumn: 'span 2' }}>
+            <Grid.Col span={{ base: 12, md: 8 }}>
               <Paper
-                p={40}
+                p={{ base: "xl", md: 40 }}
                 radius="xl"
                 withBorder
                 style={{
@@ -216,9 +207,9 @@ const ProfilePage: React.FC = () => {
                   </Text>
                 )}
               </Paper>
-            </Box>
+            </Grid.Col>
 
-          </SimpleGrid>
+          </Grid>
         </Container>
       </Box>
 

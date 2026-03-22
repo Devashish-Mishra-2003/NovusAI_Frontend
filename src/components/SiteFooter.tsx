@@ -1,12 +1,11 @@
 import React from "react";
 import {
   Container,
-  Group,
   Text,
   Title,
   Button,
-  Stack,
   Box,
+  Flex,
   useMantineTheme,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -47,34 +46,43 @@ const FooterSection: React.FC = () => {
       }}
     >
       <Container size="lg">
-        <Group justify="space-between" align="center">
+        <Flex 
+          direction={{ base: "column", md: "row" }} 
+          justify="space-between" 
+          align="center" 
+          gap={{ base: "xl", md: "md" }}
+        >
           {/* Brand Column */}
-          <Stack gap={4}>
+          <Flex direction="column" gap={4} align={{ base: "center", md: "flex-start" }}>
             <Title order={3} fw={900} style={{ letterSpacing: -0.5 }}>
               Novus<span style={{ color: theme.colors.blue[6] }}>AI</span>
             </Title>
-            <Text size="xs" c="dimmed" fw={500}>
+            <Text size="xs" c="dimmed" fw={500} ta={{ base: "center", md: "left" }}>
               AI copilot for evidence-backed drug repurposing.
             </Text>
-          </Stack>
+          </Flex>
 
           {/* Action Column */}
-          <Group gap="xl" align="center">
+          <Flex 
+            direction={{ base: "column-reverse", md: "row" }} 
+            gap={{ base: "xl", md: "xl" }} 
+            align="center"
+          >
             {/* Contact & Copyright Info */}
-            <Stack gap={2} align="flex-end">
+            <Flex direction="column" gap={4} align={{ base: "center", md: "flex-end" }}>
               <Text size="xs" c="dimmed" fw={600} style={{ cursor: "pointer" }}>
                 founders@novusai.example
               </Text>
               <Text size="xs" c="dimmed" style={{ opacity: 0.7 }}>
                 © {new Date().getFullYear()} NovusAI
               </Text>
-            </Stack>
+            </Flex>
 
             <Button
               ref={ref}
               size="md"
               radius="xl"
-              onClick={handleClick} // ✅ WIRED
+              onClick={handleClick}
               style={{
                 transition: "all 300ms ease",
                 transform: hovered ? "translateY(-4px)" : "translateY(0)",
@@ -86,8 +94,8 @@ const FooterSection: React.FC = () => {
             >
               Try NovusAI
             </Button>
-          </Group>
-        </Group>
+          </Flex>
+        </Flex>
       </Container>
 
       <style>{`
